@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>点我</title>
+  <style type="text/css">
+    * {
+      margin: 0;
+    }
+    li {
+      list-style: none;
+    }
+    a {
+      text-decoration: none;
+    }
+    .btn {
+      border-radius: 5px;
+      background-color: #ccc;
+      padding: 2px;
+      margin: 5px;
+      border: 1px solid #ccc;
+      cursor: pointer;
+    }
+    .btn:hover {
+      border: 1px solid #000;
+    }
+    .btn:active {
+      background-color: #fff;
+    }
+    .btn:focus {
+      outline: none;
+    }
+    .bg {
+      width: 100%;
+      height: 100%;
+      position: fixed;
+      top: 0;
+      left: 0;
+      background-color: #5A5A5A;
+      opacity: 0.5;
+      display: none;
+    }
+    .popup {
+      width: 500px;
+      height: 200px;
+      display: none;
+      background-color: #fff;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%,-50%);
+    }
+    .header:after {
+      content: '';
+      display: block;
+      clear: both;
+    }
+    .header a {
+      display: inline-block;
+      float: right;
+      font-size: 24px;
+    }
+    .header {
+      border-bottom: 1px solid #000;
+      padding: 10px;
+    }
+    .main {
+      padding: 20px 5px;
+    }
+    .main p {
+      margin-bottom: 10px;
+    }
+    .footer a {
+      float: right;
+      display: inline-block;
+      padding: 10px;
+    }
+    .show {
+      display: block;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="display">
+    <div class="Btn">
+      <button class="btn">点我1</button>
+      <button class="btn">点我2</button>
+      <button class="btn">点我3</button>
+      <button class="btn">点我4</button>
+    </div>
+    <div class="bg close"></div>
+    <div class="modal">
+      <li>
+        <div class="popup">
+          <div class="header">
+            <a href="#" class="close">x</a>
+            <h1>我是标题1</h1>
+          </div>
+          <div class="main">
+            <p>我是标题1</p>
+            <p>我是标题1</p>
+          </div>
+          <div class="footer">
+            <a href="#">确定</a>
+            <a href="#" class="close">取消</a>
+          </div>
+        </div>
+      </li>
+      <li>
+        <div class="popup">
+          <div class="header">
+            <a href="#" class="close">x</a>
+            <h1>我是标题2</h1>
+          </div>
+          <div class="main">
+            <p>我是标题2</p>
+            <p>我是标题2</p>
+          </div>
+          <div class="footer">
+            <a href="#">确定</a>
+            <a href="#" class="close">取消</a>
+          </div>
+        </div>
+      </li>
+      <li>
+        <div class="popup">
+          <div class="header">
+            <a href="#" class="close">x</a>
+            <h1>我是标题3</h1>
+          </div>
+          <div class="main">
+            <p>我是标题3</p>
+            <p>我是标题3</p>
+          </div>
+          <div class="footer">
+            <a href="#">确定</a>
+            <a href="#" class="close">取消</a>
+          </div>
+        </div>
+      </li>
+      <li>
+        <div class="popup">
+          <div class="header">
+            <a href="#" class="close">x</a>
+            <h1>我是标题4</h1>
+          </div>
+          <div class="main">
+            <p>我是标题4</p>
+            <p>我是标题4</p>
+          </div>
+          <div class="footer">
+            <a href="#">确定</a>
+            <a href="#" class="close">取消</a>
+          </div>
+        </div>
+      </li>
+    </div>
+  </div>
+  <script src='jquery/jquery-3.2.1.min.js'></script>
+  <script type="text/javascript">
+    var Modal = (function(){
+      function _Modal($ct){
+        this.$ct = $ct
+        this.init()
+        this.bind()
+      }
+      _Modal.prototype = {
+        init: function(){
+          var $btn = this.$btn = this.$ct.find('.Btn .btn')
+          var $close = this.$close = this.$ct.find('.close')
+          var $display1 = this.$display1 = this.$ct.find('.bg')
+          var $display2 = this.$display2 = this.$ct.find('.popup')
+        },
+        bind: function(){
+          var _this = this
+          this.$btn.on('click',function(){
+            var index = $(this).index()
+
+            _this.$display1.addClass('show')
+            _this.$display2.eq(index).addClass('show') 
+            _this.$close.on('click',function(){
+
+              _this.$display1.removeClass('show')
+              _this.$display2.eq(index).removeClass('show') 
+            }) 
+          })
+
+        }
+      }
+      return {
+        init: function($ct){
+          new _Modal($ct)
+        }
+      }
+    })()
+    Modal.init($('.display'))
+    // var btn = $('.btn')
+    // var close = $$('.close')
+    // var display = $$('.bg,.popup')
+    // btn.addEventListener('click',function(e){
+    //   display[0].classList.add('show')
+    //   display[1].classList.add('show')
+    // });
+    
+    // // [].forEach.call(close,function(clickNode){ // [].forEach.call前一定要加分号
+    // //   clickNode.addEventListener('click',function(e){
+    // //     display[0].classList.remove('show')
+    // //     display[1].classList.remove('show')
+    // // })
+    // // })
+    
+    // for (var i = 0; i < close.length; i++) {
+    //   close[i].addEventListener('click',function(e){
+    //     display[0].classList.remove('show')
+    //     display[1].classList.remove('show')
+    //   })
+    // }
+    // function $(node){
+    //   return document.querySelector(node)
+    // }
+    // function $$(cls){
+    //   return document.querySelectorAll(cls)
+    // }
+  </script>
+</body>
+</html>

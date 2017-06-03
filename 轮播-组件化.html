@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>轮播</title>
+  <style type="text/css">
+    ul,li {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    a {
+      text-decoration: none;
+    }
+    .carousel {
+      position: relative;
+      width: 300px;
+      height: 200px;
+      overflow: hidden;
+    }
+    .carousel>.img-ct {
+      position: absolute;
+/*      position: relative;
+      height: 200px;*/
+      width: 1200px;
+    }
+    .carousel>.img-ct:after {
+      content: '';
+      display: block;
+      clear: both;
+    }
+    .carousel>.img-ct li{
+      float: left;
+    }
+
+    .carousel>.img-ct img {
+      float: left;
+      width: 300px;
+      height: 200px;
+    }
+    .carousel>.btn {
+      display: block;
+      width: 30px;
+      height: 30px;
+      line-height: 30px;
+      border-radius: 50%;
+      color: #fff;
+      font-size: 20px;
+      background-color: #333;
+      text-align: center;
+      opacity: 0.5;
+      position: absolute;
+      top: 50%;
+      margin-top: -15px;
+    }
+    .carousel>.btn:hover {
+      opacity: 1;
+    }
+    .btn-pre {
+      left: 10px;
+    }
+    .btn-next {
+      right: 10px;
+    }
+    .carousel>.bullet {
+      position: absolute;
+      bottom: 20px;
+      width: 100%;
+      text-align: center;
+    }
+    .carousel>.bullet>li {
+      width: 18px;
+      height: 18px;
+      margin: 2px;
+      border-radius: 50%;
+      cursor: pointer;
+/*      border: 1px solid red;*/
+      display: inline-block;
+/*      background-color: #000;*/
+      background: url(http://static.hdslb.com/images/base/icons.png) -855px -790px no-repeat;
+    }
+    .carousel>.bullet>.active,.carousel>.bullet>.active:hover {
+      background-position: -855px -727px;
+    }
+    .carousel>.bullet>li:hover {
+      background-position: -919px -790px;
+    }
+
+
+  </style>
+</head>
+<body>
+  <div class="carousel">
+    <ul class="img-ct">
+      <li data-id='0'><a href="#"><img src="https://unsplash.it/300/200/?random=1"></a></li>
+      <li data-id='1'><a href="#"><img src="https://unsplash.it/300/200/?random=2"></a></li>
+      <li data-id='2'><a href="#"><img src="https://unsplash.it/300/200/?random=3"></a></li>
+      <li data-id='3'><a href="#"><img src="https://unsplash.it/300/200/?random=4"></a></li>
+    </ul>
+    <a class="btn btn-pre" href="#">&lt;</a>
+    <a class="btn btn-next" href="#">&gt;</a>
+    <ul class="bullet">
+      <li class="active"></li>
+      <li></li>
+      <li></li>
+      <li></li>
+    </ul>
+  </div>
+  <div class="carousel">
+    <ul class="img-ct">
+      <li data-id='0'><a href="#"><img src="https://unsplash.it/300/200/?random=1"></a></li>
+      <li data-id='1'><a href="#"><img src="https://unsplash.it/300/200/?random=2"></a></li>
+      <li data-id='2'><a href="#"><img src="https://unsplash.it/300/200/?random=3"></a></li>
+      <li data-id='3'><a href="#"><img src="https://unsplash.it/300/200/?random=4"></a></li>
+    </ul>
+    <a class="btn btn-pre" href="#">&lt;</a>
+    <a class="btn btn-next" href="#">&gt;</a>
+    <ul class="bullet">
+      <li class="active"></li>
+      <li></li>
+      <li></li>
+      <li></li>
+    </ul>
+  </div>
+
+  <script src='jquery/jquery-3.2.1.min.js'></script>
+  <script type="text/javascript">
+
+    var Carousel = (function(){
+      function _Carousel($ct){
+        this.$ct = $ct
+        this.init()
+        this.bind()
+      }
+      _Carousel.prototype = {
+        init: function(){
+          var $imgCt = this.$imgCt = this.$ct.find('.img-ct')
+          var $btnPre = this.$btnPre = this.$ct.find('.btn-pre')
+          var $btnNext = this.$btnNext = this.$ct.find('.btn-next')
+          var $bullet = this.$bullet = this.$ct.find('.bullet')
+          var $firstImg = this.$firstImg = $imgCt.find('li').first()
+          var $lastImg = $imgCt.find('li').last()
+          var imgLength = this.imgLength = $imgCt.children().length
+          var curPageIndex = this.curPageIndex = 0
+          var isAnimate = this.isAnimate = false
+
+          $imgCt.prepend($lastImg.clone())
+          $imgCt.append($firstImg.clone())
+          $imgCt.width($firstImg.width()*$imgCt.children().length)
+          $imgCt.css('left',0-$firstImg.width())
+
+        },
+        bind: function(){
+          var _this = this
+          this.$btnPre.on('click',function(e){
+            e.preventDefault()
+            _this.playPre()
+            
+          })
+          this.$btnNext.on('click',function(e){
+            e.preventDefault()
+            _this.playNext()
+            
+          })
+          this.$bullet.find('li').on('click',function(){
+            var index = $(this).index()
+            _this.play(index)
+            _this.setBullet()
+            // console.log(index)
+          })
+        },
+        playPre: function(){
+          var _this = this
+          if (this.isAnimate)return
+          this.isAnimate = true
+          this.$imgCt.animate({
+            left: '+='+this.$firstImg.width()
+          },function(){
+            _this.curPageIndex--
+            if (_this.curPageIndex < 0) {
+              _this.$imgCt.css('left',0-(_this.imgLength*_this.$firstImg.width()))
+              _this.curPageIndex = _this.imgLength-1
+            }
+            _this.isAnimate = false
+            _this.setBullet()
+
+          })
+        },
+        play: function(idx){
+          var _this = this
+          if (this.isAnimate)return
+          this.isAnimate = true
+          this.$imgCt.animate({
+            left: '+='+this.$firstImg.width()*(this.curPageIndex-idx)
+            
+          },function(){
+            _this.curPageIndex = idx
+            _this.isAnimate = false
+            _this.setBullet()
+          })
+        },
+        playNext: function(){
+          var _this = this
+          if (this.isAnimate)return
+          this.isAnimate = true
+          this.$imgCt.animate({
+            left: '-='+this.$firstImg.width()
+          },function(){
+            _this.curPageIndex++
+            if (_this.curPageIndex === _this.imgLength) {
+              _this.$imgCt.css('left',0-_this.$firstImg.width())
+              _this.curPageIndex = 0
+            }
+            _this.isAnimate = false
+            _this.setBullet()
+          })
+        },
+        setBullet: function(){
+          this.$bullet.children()
+                 .removeClass('active')
+                 .eq(this.curPageIndex)
+                 .addClass('active')
+        }
+
+      }
+      return {
+        init: function($ct){
+          $ct.each(function(idx,node){
+            new _Carousel($(node))
+          })
+          
+        }
+      }
+    })()
+    Carousel.init($('.carousel'))
+    // var $imgCt = $('.img-ct')
+    // var $btnPre = $('.btn-pre')
+    // var $btnNext = $('.btn-next')
+    // var $bullet = $('.bullet')
+    // var $firstImg = $imgCt.find('li').first()
+    // var $lastImg = $imgCt.find('li').last()
+    // var imgLength = $imgCt.children().length
+    // var curPageIndex = 0
+    // var isAnimate = false
+
+    // $imgCt.prepend($lastImg.clone())
+    // $imgCt.append($firstImg.clone())
+    // $imgCt.width($firstImg.width()*$imgCt.children().length)
+    // $imgCt.css('left',0-$firstImg.width())
+
+    // $btnPre.on('click',function(e){
+    //   e.preventDefault()
+    //   playPre()
+      
+    // })
+    // $btnNext.on('click',function(e){
+    //   e.preventDefault()
+    //   playNext()
+      
+    // })
+    // $bullet.find('li').on('click',function(){
+    //   var index = $(this).index()
+    //   play(index)
+    //   setBullet()
+    //   // console.log(index)
+    // })
+
+    // function playPre(){
+    //   if (isAnimate)return
+    //   isAnimate = true
+    //   $imgCt.animate({
+    //     left: '+='+$firstImg.width()
+    //   },function(){
+    //     curPageIndex--
+    //     if (curPageIndex < 0) {
+    //       $imgCt.css('left',0-(imgLength*$firstImg.width()))
+    //       curPageIndex = imgLength-1
+    //     }
+    //     isAnimate = false
+    //     setBullet()
+
+    //   })
+    // }
+    // function play(idx){
+    //   if (isAnimate)return
+    //   isAnimate = true
+    //   $imgCt.animate({
+    //     left: '+='+$firstImg.width()*(curPageIndex-idx)
+        
+    //   },function(){
+    //     // console.log(curPageIndex)
+    //     curPageIndex = idx
+    //     // if (curPageIndex < 0) {
+    //     //   $imgCt.css('left',-imgLength*$firstImg.width())
+    //     //   curPageIndex = 0
+    //     // }
+    //     isAnimate = false
+    //     // console.log(curPageIndex)
+    //     setBullet()
+    //   })
+    // }
+    // function playNext(){
+    //   if (isAnimate)return
+    //   isAnimate = true
+    //   $imgCt.animate({
+    //     left: '-='+$firstImg.width()
+    //   },function(){
+    //     curPageIndex++
+    //     if (curPageIndex === imgLength) {
+    //       $imgCt.css('left',0-$firstImg.width())
+    //       curPageIndex = 0
+    //     }
+    //     isAnimate = false
+    //     setBullet()
+    //   })
+    // }
+    // function setBullet(){
+    //   $bullet.children()
+    //          .removeClass('active')
+    //          .eq(curPageIndex)
+    //          .addClass('active')
+    // }
+
+  </script>
+</body>
+</html>
